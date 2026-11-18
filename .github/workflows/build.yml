@@ -41,8 +41,7 @@ jobs:
             echo "dir=Agra-GUI" >> "$GITHUB_OUTPUT"
           else
             echo "ERROR: gradlew was not found!"
-            echo "Repository files:"
-            ls -la
+            find . -maxdepth 4 -type f \( -name gradlew -o -name build.gradle -o -name build.gradle.kts \)
             exit 1
           fi
 
@@ -52,13 +51,12 @@ jobs:
 
       - name: Build Mod
         working-directory: ${{ steps.gradle.outputs.dir }}
-        run: ./gradlew --no-daemon clean build
+        run: ./gradlew --no-daemon clean build --stacktrace
 
       - name: Upload Mod JAR
         uses: actions/upload-artifact@v4
         with:
           name: Agra-GUI-Fabric
-          path: |
-            ${{ steps.gradle.outputs.dir }}/build/libs/*.jar
+          path: ${{ steps.gradle.outputs.dir }}/build/libs/*.jar
           if-no-files-found: error
           retention-days: 14
